@@ -51,7 +51,6 @@ def get_credentials():
 def getInfrastructureInfo():
 	node_list = {}
 	is_spot = False
-	state = ""
 	
 	(auth_data, server) = connect()
 	
@@ -63,30 +62,20 @@ def getInfrastructureInfo():
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
 			(success, info)  = server.GetVMInfo(infrastructure_id, vm_id, auth_data)
+		
 			if success:
 				info_radl = radl_parse.parse_radl(info)
 				is_spot = info_radl.systems[0].getValue('spot')
 				node_name = info_radl.systems[0].name
-				#ignore nodes in state 'off' or 'failed' and delete them from the infrastructure
-				state = info_radl.systems[0].getValue('state')
-				if state != 'off' and state != 'failed':
-					logging.info("state of node " + node_name + " is " + state)
-					if is_spot == 'yes':
-						node_list[node_name] = 'spot'
-					else:
-						node_list[node_name] = 'ondemand'
+				if is_spot == 'yes':
+					node_list[node_name] = 'spot'
 				else:
-					(success, info) = server.RemoveResource(infrastructure_id, vm_id, auth_data)
-					if success:
-						logging.info("Successfully removed VM " + vm_id)
-					else:
-						logging.warn('Error removing the VM with ID: %s. Error: %s' % (vm_id, info))
+					node_list[node_name] = 'ondemand'
 			else:
 				logging.error("ERROR obtaining the node information: " + vm_id)
 	
@@ -108,8 +97,7 @@ def get_launch_time(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -138,8 +126,7 @@ def get_node_state(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -169,8 +156,7 @@ def get_user_spot_bid(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -200,8 +186,7 @@ def get_instance_type(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -231,8 +216,7 @@ def get_region(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
@@ -264,8 +248,7 @@ def get_availability_zone(node):
 		logging.error("ERROR listing the infrastructures: " + res)
 		sys.exit(1) 
 	
-	(success, res) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
-	vm_ids = res['vm_list']
+	(success, vm_ids) = server.GetInfrastructureInfo(infrastructure_id, auth_data)
 	if success:
 		logging.debug("Successfully obtained infrastructure info")
 		for vm_id in vm_ids:
