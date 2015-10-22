@@ -5,7 +5,7 @@ ckptman is a tool that automates checkpointing in the jobs running on spot insta
  
 - **Hourly Checkpointing algorithm**: checkpoints are taken just prior to the beginning of next instance hour. Since Amazon is not charging any partial hour, this scheme will save as much tasks as the user is paying.
 
-- **Threshold Checkpointing algorithm**: checkpoints are taken when a rising in the price of the spot instance is observed inside an interval. The interval is a % of the price the user has determined. 
+- **Threshold Checkpointing algorithm**: checkpoints are taken when a rise in the price of the spot instance is observed within an interval. The lower limit of the interval is a fraction of the price the user has determined. This value is recalculated every 60 seconds (but this time is configurable) or when a checkpoint is taken. The upper limit is the bid of the user. Moreover, checkpoints are also taken every hour. 
 
 It is created to work with `Amazon Spot Instances`_ , `BLCR`_ checkpointing tool and `SLURM`_ as local resource management system, inside the `EC3`_ cluster deployment tool.
 
